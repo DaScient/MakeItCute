@@ -1,30 +1,42 @@
-"""
-telnet_tutor.py — gentle Telnet demonstration.
-Educational use only — no live system access.
-"""
+# /Users/dontadaya/PrettyPython/projects/MakeItCute/ForNicole/tools/telnet_tutor.py
+import sys, subprocess, asyncio
 
-import telnetlib
-import time
+# Ensure telnetlib3 is available (Python 3.13+ replacement for stdlib telnetlib)
+try:
+    import telnetlib3  # type: ignore
+except Exception:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--user", "telnetlib3"])
+    import telnetlib3  # type: ignore
 
-HOST = "telehack.com"  # a public sandboxed telnet playground
+HOST, PORT = "telehack.com", 23
 
-def connect_demo():
-    print("🌐 Connecting to Telehack (a safe retro sandbox)...")
-    tn = telnetlib.Telnet(HOST)
-    time.sleep(1)
-    banner = tn.read_until(b":", timeout=5).decode(errors="ignore")
-    print("Server says:\n", banner.strip())
-    tn.write(b"help\n")
-    time.sleep(1)
-    data = tn.read_very_eager().decode(errors="ignore")
-    print("----- Help excerpt -----")
-    print("\n".join(data.splitlines()[:20]))
-    tn.write(b"quit\n")
-    tn.close()
-    print("Disconnected gracefully.")
+async def main():
+    try:
+        reader, writer = await telnetlib3.open_connection(HOST, PORT, encoding="utf8")
+        # ask for help right away
+        writer.write("help\n")
+        await writer.drain()
+
+        try:
+            out = await asyncio.wait_for(reader.read(2000), timeout=1.5)
+        except asyncio.TimeoutError:
+            out = ""
+
+        if out:
+            print("----- Help excerpt -----")
+            print(out[:1000])
+
+        writer.write("quit\n")
+        await writer.drain()
+        writer.close()
+        try:
+            await writer.wait_closed()
+        except Exception:
+            pass
+        print("Disconnected.")
+    except Exception as e:
+        print("Error:", e)
+        print("Tip: Some networks block outbound telnet (port 23). Try another network or VPN.")
 
 if __name__ == "__main__":
-    try:
-        connect_demo()
-    except Exception as e:
-        print("❌ Connection error:", e)
+    asyncio.run(main())
