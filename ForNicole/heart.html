@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For Nicole — Heart Portal</title>
+<meta name="color-scheme" content="light dark" />
+<style>
+  :root{
+    --bg: #1b1b23;          /* default: comfy dark */
+    --card: #232334;
+    --text: #f5f7ff;
+    --muted: #cfd6ffcc;
+    --accent: #ff87b5;      /* pink */
+    --accent-2: #ffd1e6;
+    --ring: #ffb3cf;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  /* Seafoam theme */
+  .theme-seafoam{
+    --bg:#10221f; --card:#1a2f2b; --text:#eefbf5; --muted:#d1f5e8cc;
+    --accent:#58e1b9; --accent-2:#bdf5e4; --ring:#8ff0d2;
+  }
+  /* Lavender theme */
+  .theme-lavender{
+    --bg:#1a1821; --card:#231f33; --text:#f7f2ff; --muted:#e1d9ffcc;
+    --accent:#b08cff; --accent-2:#d8c7ff; --ring:#c8adff;
+  }
+
+  /* Pink (default) uses :root variables above */
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background:
+      radial-gradient(60vmax 60vmax at 20% -20%, color-mix(in srgb, var(--accent) 24%, transparent) 0 50%, transparent 60%),
+      radial-gradient(70vmax 70vmax at 120% 20%, color-mix(in srgb, var(--accent-2) 20%, transparent) 0 40%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    display:grid; place-items:center;
+  }
+  .wrap{
+    width:min(880px, 92vw);
+    display:grid; gap:18px;
+    padding:24px;
+  }
+
+  .card{
+    background:linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, black 0%), var(--card));
+    border:1px solid color-mix(in srgb, var(--ring) 22%, transparent);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    padding: clamp(20px, 5vw, 34px);
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  .title{
+    margin:0 0 8px 0;
+    font-size: clamp(20px, 3.6vw, 30px);
+    letter-spacing:.2px;
+  }
+  .subtitle{
+    margin:0 0 18px 0;
+    color:var(--muted);
+    font-size: clamp(14px, 2.2vw, 16px);
+  }
+
+  /* Heart container */
+  .heartbox{
+    display:grid; place-items:center;
+    margin:12px 0 20px 0;
+  }
+  svg{ width:min(320px, 68vw); height:auto; display:block; }
+
+  /* Pulse animation (respects reduced motion) */
+  @media (prefers-reduced-motion:no-preference){
+    .pulse{ animation: pulse 1800ms ease-in-out infinite; transform-origin: center; }
+    @keyframes pulse{
+      0%{ transform:scale(0.98); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+      50%{ transform:scale(1.03); filter: drop-shadow(0 12px 24px rgba(0,0,0,.25)); }
+      100%{ transform:scale(0.98); }
+    }
+    .sparkle{ animation: sparkle 6s linear infinite; }
+    @keyframes sparkle{
+      0%{ opacity:.0; transform:translateY(10px) scale(.9) rotate(0deg); }
+      20%{ opacity:.7; }
+      50%{ opacity:.0; transform:translateY(-40px) scale(1.1) rotate(180deg); }
+      100%{ opacity:.0; transform:translateY(10px) scale(.9) rotate(360deg); }
+    }
+  }
+
+  /* Buttons */
+  .buttons{
+    display:grid; grid-template-columns: repeat(2, minmax(0,1fr));
+    gap:12px;
+    margin-top:8px;
+  }
+  @media (max-width:560px){ .buttons{ grid-template-columns:1fr; } }
+
+  .btn{
+    --bg-btn: color-mix(in srgb, var(--accent) 18%, var(--card));
+    --bg-btn-hover: color-mix(in srgb, var(--accent) 28%, var(--card));
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:10px;
+    border:1px solid color-mix(in srgb, var(--ring) 30%, transparent);
+    border-radius:14px;
+    padding:12px 14px;
+    color:var(--text); text-decoration:none; font-weight:600;
+    background: var(--bg-btn);
+    box-shadow: 0 6px 16px rgba(0,0,0,.20);
+    transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
+    outline: none;
+  }
+  .btn:hover, .btn:focus-visible{
+    background: var(--bg-btn-hover);
+    box-shadow: 0 10px 22px rgba(0,0,0,.28);
+    transform: translateY(-1px);
+  }
+  .btn:active{ transform: translateY(0); }
+
+  /* Theme switcher row */
+  .row{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+    margin-top:8px;
+  }
+  .swatch{
+    width:36px; height:28px; border-radius:9px; border:1px solid color-mix(in srgb, var(--ring) 35%, transparent);
+    cursor:pointer; display:inline-block;
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+  }
+  .swatch[data-theme="pink"]{ background: linear-gradient(180deg,#ff9ac2,#ff6ea7); }
+  .swatch[data-theme="seafoam"]{ background: linear-gradient(180deg,#74f0c4,#34d1a6); }
+  .swatch[data-theme="lavender"]{ background: linear-gradient(180deg,#c3b1ff,#9c7cff); }
+  .swatch:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+  .note{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+  /* Decorative sparkles (non-blocking) */
+  .sparkle{
+    position:absolute; inset:auto auto 18px 18px;
+    width:80px; height:80px; pointer-events:none; opacity:.35;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,.4));
+    z-index:0;
+  }
+  .card > *{ position:relative; z-index:1; } /* keep content above sparkles */
+</style>
+</head>
+<body>
+  <main class="wrap" id="app">
+    <section class="card" aria-label="For Nicole — Heart Portal">
+      <!-- Decorative sparkle -->
+      <svg class="sparkle" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <path fill="url(#g1)" d="M32 10l4 10 10 4-10 4-4 10-4-10-10-4 10-4 4-10z"/>
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--accent)"/>
+            <stop offset="1" stop-color="var(--accent-2)"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <h1 class="title">Hi Nicole — this is your heart portal</h1>
+      <p class="subtitle">Tiny reps. Bright wins. A soft place to land and learn.</p>
+
+      <div class="heartbox" role="img" aria-label="A glowing animated heart">
+        <!-- SVG Heart with gradient fill and soft pulse -->
+        <svg viewBox="0 0 400 360" aria-hidden="true" class="pulse">
+          <defs>
+            <radialGradient id="heartGrad" cx="50%" cy="40%" r="70%">
+              <stop offset="0%" stop-color="var(--accent-2)"/>
+              <stop offset="70%" stop-color="var(--accent)"/>
+              <stop offset="100%" stop-color="var(--accent)"/>
+            </radialGradient>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="8" result="b"/>
+              <feMerge>
+                <feMergeNode in="b"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Heart path -->
+          <path filter="url(#glow)" fill="url(#heartGrad)" d="
+            M200,330
+            C120,270 60,220 40,170
+            C10,90 70,40 120,60
+            C155,75 175,105 200,135
+            C225,105 245,75 280,60
+            C330,40 390,90 360,170
+            C340,220 280,270 200,330 Z"/>
+        </svg>
+      </div>
+
+      <div class="buttons" role="group" aria-label="Quick actions">
+        <a class="btn" href="javascript:void(0)" id="studydateBtn" aria-label="Open Study Date notebook">📓 Study Date</a>
+        <a class="btn" href="https://github.com/DaScient/MakeItCute" target="_blank" rel="noopener" aria-label="Open MakeItCute Source">🌐 MakeItCute Source</a>
+        <a class="btn" href="https://kdpreports.amazon.com/orders" target="_blank" rel="noopener" aria-label="Open Amazon KDP Orders">📈 KDP Orders</a>
+        <a class="btn" href="https://www.tiktok.com/@nicollettesheart" target="_blank" rel="noopener" aria-label="Open Nicole’s TikTok">🎵 TikTok</a>
+      </div>
+
+      <div class="row" aria-label="Theme picker">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="note" id="themeLabel">Theme:</span>
+          <button class="swatch" data-theme="pink" aria-labelledby="themeLabel" title="Pink theme"></button>
+          <button class="swatch" data-theme="seafoam" aria-labelledby="themeLabel" title="Seafoam theme"></button>
+          <button class="swatch" data-theme="lavender" aria-labelledby="themeLabel" title="Lavender theme"></button>
+        </div>
+        <span class="note">Remembers your pick • Respects Reduced Motion</span>
+      </div>
+    </section>
+  </main>
+
+<script>
+(function(){
+  const app = document.getElementById('app');
+
+  // Theme management
+  const THEME_KEY = 'nicole-heart-theme';
+  const applyTheme = (name) => {
+    app.classList.remove('theme-seafoam','theme-lavender');
+    if(name === 'seafoam') app.classList.add('theme-seafoam');
+    if(name === 'lavender') app.classList.add('theme-lavender');
+    localStorage.setItem(THEME_KEY, name);
+  };
+  const initial = localStorage.getItem(THEME_KEY) || 'pink';
+  applyTheme(initial);
+
+  document.querySelectorAll('.swatch').forEach(btn=>{
+    btn.addEventListener('click', ()=> applyTheme(btn.dataset.theme));
+    btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); btn.click(); }});
+  });
+
+  // Study Date: in a browser we can’t launch Jupyter, so we nudge kindly.
+  const studyBtn = document.getElementById('studydateBtn');
+  studyBtn.addEventListener('click', ()=>{
+    alert([
+      "Study Date opens in your terminal.",
+      "Tip: in your pastel shell, type:  studydate",
+      "Or use the Learn Menu: Alt-m  →  2"
+    ].join("\n"));
+  });
+
+  // Respect reduced motion: pause pulse if user prefers less motion.
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const toggleMotion = () => {
+    document.querySelectorAll('.pulse').forEach(el=>{
+      el.style.animationPlayState = mq.matches ? 'paused' : 'running';
+    });
+  };
+  mq.addEventListener ? mq.addEventListener('change', toggleMotion) : mq.addListener(toggleMotion);
+  toggleMotion();
+})();
+</script>
+</body>
+</html>
